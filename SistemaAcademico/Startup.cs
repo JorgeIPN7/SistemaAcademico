@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using SistemaAcademico.Models;
+using SistemaAcademico.Data;
 
 namespace SistemaAcademico
 {
@@ -22,10 +25,13 @@ namespace SistemaAcademico
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddDbContext<SistemaAcademicoContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("SistemaAcademicoContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, SistemaAcademicoContext context)
         {
             if (env.IsDevelopment())
             {
@@ -45,6 +51,7 @@ namespace SistemaAcademico
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            DBInitializer.Initialize(context);
         }
     }
 }
